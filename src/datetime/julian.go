@@ -12,6 +12,16 @@ func roundFloat(val float64, precision uint) float64 {
 	return math.Round(val*ratio) / ratio
 }
 
+func isLeapYear(year int) bool {
+	if year%4 == 0 && year%100 != 0 {
+		return true
+	} else if year%4 == 0 && year%100 == 0 && year%400 == 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
 // JulianDay converts either a Gregorian or Julian Date to its corresponding Julian Day.
 // M - month of the date
 // Y - year of the date
@@ -85,4 +95,42 @@ func DaysBetweenDates(M1 uint32, Y1 int, D1 float64, M2 uint32, Y2 int, D2 float
 func AdjustedDateByDays(M uint32, Y int, D float64, Days float64) (uint32, float64, int) {
 	var JD = JulianDay(M, Y, D, true)
 	return GregorianDate(JD + Days)
+}
+
+func DayOfWeek(M uint32, Y int, D float64) uint32 {
+	var JD = JulianDay(M, Y, D, true)
+	var JD1 = JD + 1.5
+	return uint32(int(roundFloat(JD1, 0)) % 7)
+}
+
+func DayOfTheYear(M uint32, Y int, D float64) uint32 {
+	var K = 2.0
+	if isLeapYear(Y) {
+		log.Debug("leap year")
+		K = 1.0
+	} else {
+		log.Debug("not leap year")
+	}
+	//var I1 = roundFloat(float64(275*M)/9.0, 0)
+	var I1 = int(float64(275*M) / 9.0)
+	//log.Debug("I1 = " + fmt.Sprintf("%f", I1))
+	//var I2 = roundFloat(float64(M+9)/12.0, 0)
+	var I2 = int(float64(M+9) / 12.0)
+	//log.Debug("I2 = " + fmt.Sprintf("%f", I2))
+	var N = uint32(roundFloat(float64(I1)-float64(K)*float64(I2)+D-30.0, 0))
+	log.Debug("N = " + strconv.Itoa(int(N)))
+	return N
+}
+
+func MonthAndDay(N uint32, Y int) (uint32, uint32) {
+	var K = 2
+	if isLeapYear(Y) {
+		K = 1
+	}
+	var M = uint32(1)
+	if N >= 32 {
+		M = uint32((9.0*(float64(K)+float64(N)))/275.0 + 0.98)
+	}
+	var D = uint32(int(N) - int(float64(275*M)/9.0) + K*int(float64(M+9)/12.0) + 30)
+	return M, D
 }

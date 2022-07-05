@@ -3,6 +3,7 @@ package datetime
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"strconv"
 	"testing"
 )
 
@@ -104,5 +105,46 @@ func TestAdjustedDateByDays(t *testing.T) {
 	}
 	if y != 2018 {
 		t.Errorf("Output %d not equal to expected %d", y, 2018)
+	}
+}
+
+func TestDayOfWeek(t *testing.T) {
+	var day = DayOfWeek(6, 1954, 30)
+	log.Debug(strconv.Itoa(int(day)))
+	if day != 3 {
+		t.Errorf("Output %d not equal to expected %d", day, 3)
+	}
+}
+
+type addDayOfTheYearTest struct {
+	M        uint32
+	D        float64
+	Y        int
+	expected uint32
+}
+
+var addDayOfTheYearTests = []addDayOfTheYearTest{
+	addDayOfTheYearTest{11, 14.0, 1978, 318},
+	addDayOfTheYearTest{4, 22.0, 1988, 113},
+}
+
+func TestDayOfTheYear(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
+	for _, test := range addDayOfTheYearTests {
+		var N = DayOfTheYear(test.M, test.Y, test.D)
+		if N != test.expected {
+			t.Errorf("Output %d not equal to expected %d", N, test.expected)
+		}
+
+	}
+}
+
+func TestMonthAndDay(t *testing.T) {
+	var m, d = MonthAndDay(15, 2022)
+	if m != 1 {
+		t.Errorf("Output %d not equal to expected %d", m, 1)
+	}
+	if d != 15 {
+		t.Errorf("Output %d not equal to expected %d", d, 15)
 	}
 }
