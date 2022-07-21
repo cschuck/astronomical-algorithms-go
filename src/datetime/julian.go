@@ -27,9 +27,9 @@ func isLeapYear(year int) bool {
 // Y - year of the date
 // D - day of the month
 // gregorian - true if the date is Gregorian, false if Julian
-func JulianDay(M uint32, Y int, D float64, gregorian bool) float64 {
+func JulianDay(M uint32, Y int, D float64, isGregorian bool) float64 {
 	var B = 0
-	if gregorian {
+	if isGregorian {
 		var A = uint32(Y / 100)
 		log.Debug("A = " + strconv.Itoa(int(A)))
 		B = 2 - int(A) + int(int(A)/4)
@@ -51,8 +51,8 @@ func JulianDay(M uint32, Y int, D float64, gregorian bool) float64 {
 // Y - year of the date
 // D - day of the month
 // gregorian - true if the date is Gregorian, false if Julian
-func ModifiedJulianDay(M uint32, Y int, D float64, gregorian bool) float64 {
-	return JulianDay(M, Y, D, gregorian) - 2400000.5
+func ModifiedJulianDay(M uint32, Y int, D float64, isGregorian bool) float64 {
+	return JulianDay(M, Y, D, isGregorian) - 2400000.5
 }
 
 func GregorianDate(JD float64) (uint32, float64, int) {
